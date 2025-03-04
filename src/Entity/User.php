@@ -40,9 +40,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]
     private Collection $tasks;
 
+    /**
+     * @var Collection<int, Stat>
+     */
+    #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'user')]
+    private Collection $stats;
+
+    #[ORM\Column(length: 25)]
+    private ?string $username = null;
+
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->stats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -146,6 +156,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $task->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Stat>
+     */
+    public function getStats(): Collection
+    {
+        return $this->stats;
+    }
+
+    public function addStat(Stat $stat): static
+    {
+        if (!$this->stats->contains($stat)) {
+            $this->stats->add($stat);
+            $stat->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStat(Stat $stat): static
+    {
+        if ($this->stats->removeElement($stat)) {
+            $stat->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
 
         return $this;
     }
