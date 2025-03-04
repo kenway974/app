@@ -25,21 +25,21 @@ class Stat
     private ?string $description = null;
 
     /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'stats')]
+    private Collection $User;
+
+    /**
      * @var Collection<int, Task>
      */
     #[ORM\ManyToMany(targetEntity: Task::class, inversedBy: 'stats')]
-    private Collection $task;
-
-    /**
-     * @var Collection<int, user>
-     */
-    #[ORM\ManyToMany(targetEntity: user::class, inversedBy: 'stats')]
-    private Collection $user;
+    private Collection $Task;
 
     public function __construct()
     {
-        $this->task = new ArrayCollection();
-        $this->user = new ArrayCollection();
+        $this->User = new ArrayCollection();
+        $this->Task = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -84,17 +84,41 @@ class Stat
     }
 
     /**
+     * @return Collection<int, User>
+     */
+    public function getUser(): Collection
+    {
+        return $this->User;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->User->contains($user)) {
+            $this->User->add($user);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        $this->User->removeElement($user);
+
+        return $this;
+    }
+
+    /**
      * @return Collection<int, Task>
      */
     public function getTask(): Collection
     {
-        return $this->task;
+        return $this->Task;
     }
 
     public function addTask(Task $task): static
     {
-        if (!$this->task->contains($task)) {
-            $this->task->add($task);
+        if (!$this->Task->contains($task)) {
+            $this->Task->add($task);
         }
 
         return $this;
@@ -102,31 +126,7 @@ class Stat
 
     public function removeTask(Task $task): static
     {
-        $this->task->removeElement($task);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, user>
-     */
-    public function getUser(): Collection
-    {
-        return $this->user;
-    }
-
-    public function addUser(user $user): static
-    {
-        if (!$this->user->contains($user)) {
-            $this->user->add($user);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(user $user): static
-    {
-        $this->user->removeElement($user);
+        $this->Task->removeElement($task);
 
         return $this;
     }

@@ -40,14 +40,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'user')]
     private Collection $tasks;
 
+    #[ORM\Column(length: 25)]
+    private ?string $username = null;
+
     /**
      * @var Collection<int, Stat>
      */
-    #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'user')]
+    #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'User')]
     private Collection $stats;
-
-    #[ORM\Column(length: 25)]
-    private ?string $username = null;
 
     public function __construct()
     {
@@ -160,6 +160,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Stat>
      */
@@ -183,18 +196,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->stats->removeElement($stat)) {
             $stat->removeUser($this);
         }
-
-        return $this;
-    }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): static
-    {
-        $this->username = $username;
 
         return $this;
     }

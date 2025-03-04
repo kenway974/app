@@ -38,13 +38,14 @@ class Task
     /**
      * @var Collection<int, Stat>
      */
-    #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'task')]
+    #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'Task')]
     private Collection $stats;
 
     public function __construct()
     {
         $this->stats = new ArrayCollection();
     }
+
 
     public function getId(): ?int
     {
@@ -149,4 +150,6 @@ class Task
 
         return $this;
     }
+
+ 
 }

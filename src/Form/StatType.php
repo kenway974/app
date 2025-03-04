@@ -10,24 +10,21 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TaskType extends AbstractType
+class StatType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('title')
-            ->add('sous_taches')
-            ->add('date_butoir', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('importance')
-            ->add('checked')
-            ->add('user', EntityType::class, [
+            ->add('score')
+            ->add('description')
+            ->add('User', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'id',
+                'multiple' => true,
             ])
-            ->add('stats', EntityType::class, [
-                'class' => Stat::class,
+            ->add('Task', EntityType::class, [
+                'class' => Task::class,
                 'choice_label' => 'id',
                 'multiple' => true,
             ])
@@ -37,7 +34,7 @@ class TaskType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Task::class,
+            'data_class' => Stat::class,
         ]);
     }
 }

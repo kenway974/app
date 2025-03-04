@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stat index{% endblock %}
+
+{% block body %}
+    <h1>Stat index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Score</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for stat in stats %}
+            <tr>
+                <td>{{ stat.id }}</td>
+                <td>{{ stat.title }}</td>
+                <td>{{ stat.score }}</td>
+                <td>{{ stat.description }}</td>
+                <td>
+                    <a href="{{ path('app_stat_show', {'id': stat.id}) }}">show</a>
+                    <a href="{{ path('app_stat_edit', {'id': stat.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_stat_new') }}">Create new</a>
+{% endblock %}
