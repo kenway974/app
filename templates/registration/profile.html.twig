@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Bienvenue sur votre profil</h1>
+
+    {% if app.user %}
+        <p>Nom d'utilisateur : {{ app.user.username }}</p>
+        <p>Email : {{ app.user.email }}</p>
+        <h2>Liste des tâches :</h2>
+
+        <ul>
+    {% for task in tasks %}
+        <li>{{ task.title }}</li>
+    {% else %}
+        <li>Aucune tâche pour l'instant.</li>
+    {% endfor %}
+        </ul>
+
+    <h2>Ajouter une nouvelle tâche :</h2>
+
+    <a href="{{ path('app_task_new') }}">Créer une tâche</a>
+
+    </br>
+
+    {% else %}
+        <p>Utilisateur non connecté.</p>
+    {% endif %}
+
+    <a href="{{ path('app_logout') }}">Déconnexion</a>
+{% endblock %}

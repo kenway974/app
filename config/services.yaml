@@ -17,8 +17,16 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
+            #- '../src/Entity/'
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    
+    App\EventListener\UserRegistrationListener:
+        tags: 
+            - {
+                class: App\EventListener\UserRegistrationListener,
+                name: kernel.event_listener,
+                event: user.register}

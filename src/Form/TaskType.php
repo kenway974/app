@@ -22,15 +22,15 @@ class TaskType extends AbstractType
             ])
             ->add('importance')
             ->add('checked')
-            ->add('user', EntityType::class, [
+            /*->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'id',
-            ])
-            ->add('stats', EntityType::class, [
+            ])*/
+            /*->add('stats', EntityType::class, [
                 'class' => Stat::class,
                 'choice_label' => 'id',
                 'multiple' => true,
-            ])
+            ])*/
         ;
     }
 
