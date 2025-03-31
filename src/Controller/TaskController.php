@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Entity\Stat;
 use App\Entity\User;
 use App\Form\TaskType;
+use App\Repository\UserRepository;
 use App\Repository\TaskRepository;
+use App\Repository\StatRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,33 +27,7 @@ final class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_task_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, Security $security): Response
-    {
-        $user = $security->getUser();
-        if (!$user) {
-            // Si l'utilisateur n'est pas connecté
-            return $this->redirectToRoute('app_login');
-        }
-        
-        $task = new Task();
-        $task->setUser($user);
-        $form = $this->createForm(TaskType::class, $task);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($task);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('profile', ['id' => 2], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('task/new.html.twig', [
-            'task' => $task,
-            'form' => $form,
-        ]);
-    }
-
+    
     #[Route('/{id}', name: 'app_task_show', methods: ['GET'])]
     public function show(Task $task): Response
     {

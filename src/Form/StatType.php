@@ -18,7 +18,7 @@ class StatType extends AbstractType
             ->add('title')
             ->add('score')
             ->add('description')
-            ->add('User', EntityType::class, [
+            /*->add('User', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'id',
                 'multiple' => true,
@@ -27,7 +27,7 @@ class StatType extends AbstractType
                 'class' => Task::class,
                 'choice_label' => 'id',
                 'multiple' => true,
-            ])
+            ])*/
         ;
     }
 

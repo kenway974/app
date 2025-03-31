@@ -8,21 +8,66 @@
     {% if app.user %}
         <p>Nom d'utilisateur : {{ app.user.username }}</p>
         <p>Email : {{ app.user.email }}</p>
+        
         <h2>Liste des tâches :</h2>
-
         <ul>
     {% for task in tasks %}
-        <li>{{ task.title }}</li>
+        <table class="table-task">
+        <tbody>
+            <tr>
+                <th>Title</th>
+                <td>{{ task.title }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ task.soustaches }}</td>
+            </tr>
+            <tr>
+            <th>Stat</th>
+                {% for stat in task.stats %}
+            <tr>
+                <td>{{ stat.title }}</td>
+                <td>{{ stat.score }}</td> {# Remplace 'name' par l'attribut correct de ton entité Stat #}
+            </tr>
+        {% endfor %}
+            </tr>
+                    </br>
+        </tbody>
+        </table>
     {% else %}
-        <li>Aucune tâche pour l'instant.</li>
+        <h4>Aucune tâche pour l'instant.</h4>
     {% endfor %}
         </ul>
-
-    <h2>Ajouter une nouvelle tâche :</h2>
-
-    <a href="{{ path('app_task_new') }}">Créer une tâche</a>
+        <a href="{{ path('app_task_new', { id: app.user.id }) }}">Créer une tâche</a>
 
     </br>
+
+        <h2>Liste des stats :</h2>
+        <ul>
+    {% for stat in stats %}
+        <table class="table-stat">
+        <tbody>
+            <tr>
+                <th>Title</th>
+                <td>{{ stat.title }}</td>
+            </tr>
+            <tr>
+                <th>Score</th>
+                <td>{{ stat.score }}</td>
+            </tr>
+            </br>
+        </tbody>
+        </table>
+    {% else %}
+        <h4>Aucune stat pour l'instant.</h4>
+    {% endfor %}
+        </ul>
+        <a href="{{ path('app_stat_add', { id: app.user.id }) }}">Ajouter une stat</a>
+        <a href="{{ path('app_stat_new', { id: app.user.id }) }}">Créer une stat</a>
+
+    </br>
+    </br>
+
 
     {% else %}
         <p>Utilisateur non connecté.</p>

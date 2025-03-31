@@ -2,26 +2,37 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\Stat;
 use App\Form\StatType;
+use App\Form\UserStatType;
 use App\Repository\StatRepository;
+use Symfony\Bundle\SecurityBundle\Security;
+use App\Event\UserRegistrationEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/stat')]
 final class StatController extends AbstractController
 {
-    #[Route(name: 'app_stat_index', methods: ['GET'])]
-    public function index(StatRepository $statRepository): Response
+   // LISTE STAT ADMIN
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route('\stats-admin', name: 'app_stats_admin', methods: ['GET'])]
+    public function statsAdmin(StatRepository $statRepository): Response
     {
-        return $this->render('stat/index.html.twig', [
+        return $this->render('stat/stats_admin.html.twig', [
             'stats' => $statRepository->findAll(),
         ]);
     }
 
+    
+
+    // NEW STAT ADMIN
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/new', name: 'app_stat_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -33,7 +44,7 @@ final class StatController extends AbstractController
             $entityManager->persist($stat);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_stat_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_stats_admin', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('stat/new.html.twig', [
@@ -41,7 +52,9 @@ final class StatController extends AbstractController
             'form' => $form,
         ]);
     }
-
+    
+    // STAT ADMIN
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}', name: 'app_stat_show', methods: ['GET'])]
     public function show(Stat $stat): Response
     {
@@ -50,6 +63,8 @@ final class StatController extends AbstractController
         ]);
     }
 
+    // EDIT STAT ADMIN
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_stat_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Stat $stat, EntityManagerInterface $entityManager): Response
     {
@@ -68,7 +83,9 @@ final class StatController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_stat_delete', methods: ['POST'])]
+    // DELETE STAT ADMIN
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route('/{id}/delete', name: 'app_stat_delete', methods: ['POST'])]
     public function delete(Request $request, Stat $stat, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$stat->getId(), $request->getPayload()->getString('_token'))) {
@@ -78,4 +95,5 @@ final class StatController extends AbstractController
 
         return $this->redirectToRoute('app_stat_index', [], Response::HTTP_SEE_OTHER);
     }
+
 }

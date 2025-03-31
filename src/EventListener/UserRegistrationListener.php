@@ -18,10 +18,10 @@ class UserRegistrationListener
     }
 
     public function onUserRegister(UserRegistrationEvent $event): void
-    {      
+    {       
         $user = $event->getUser();
         $email = (new Email())
-            ->from('hello@example.com')
+            ->from('kpignolet18@gmail.com')
             ->to($user->getEmail())
             //->cc('cc@example.com')
             //->bcc('bcc@example.com')
@@ -31,9 +31,9 @@ class UserRegistrationListener
             ->text('Sending emails is fun again!')
             ->html('<p>See Twig integration for better HTML integration!</p>');
 
-        $this->mailer->send($email);
-
-        // ...
+            $this->mailer->send($email);
+            
+            // ...
+            
     }
 }
-
