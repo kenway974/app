@@ -7,34 +7,50 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
+    //TASK ID
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // TITLE
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 25)]
     private ?string $title = null;
 
+    // SOUS-TACHES
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $sous_taches = null;
 
+    // DATE BUTOIR
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 'now', max: '+ 1 month')]
     private ?\DateTimeInterface $date_butoir = null;
 
+    // IMPORTANCE
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 1, max: 5)]
     private ?int $importance = null;
 
+    // CHECKED
     #[ORM\Column]
     private ?bool $checked = null;
 
+    // USER ASSOCIE
     #[ORM\ManyToOne(inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    // STATS ASSOCIEES
     /**
      * @var Collection<int, Stat>
      */

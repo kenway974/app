@@ -23,6 +23,10 @@
                 <td>{{ task.soustaches }}</td>
             </tr>
             <tr>
+                <th>Date Butoir</th>
+                <td>{{ task.datebutoir|date('Y-m-d') }}</td>
+            </tr>
+            <tr>
             <th>Stat</th>
                 {% for stat in task.stats %}
             <tr>

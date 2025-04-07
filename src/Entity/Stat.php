@@ -6,30 +6,42 @@ use App\Repository\StatRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StatRepository::class)]
 class Stat
 {
+    // STAT ID
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // TITLE
     #[ORM\Column(length: 25)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 25)]
     private ?string $title = null;
 
+    //SCORE
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Range(min: 0, max: 100)]
     private ?int $score = null;
 
+    // DESCRIPTION
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(min: 3, max: 255)]
     private ?string $description = null;
 
+    // USER ASSOCIE
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'stats')]
     private Collection $User;
 
+    // TACHES ASSOCIEES
     /**
      * @var Collection<int, Task>
      */

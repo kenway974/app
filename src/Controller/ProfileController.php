@@ -10,6 +10,7 @@ use App\Repository\StatRepository;
 use App\Form\TaskType;
 use App\Form\UserStatType;
 use App\Security\EmailVerifier;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,19 +29,45 @@ use Symfony\Component\Mailer\MailerInterface;
 class ProfileController extends AbstractController
 
 {
+    public function statProgress(User $user):  void {
+        
+        $tasks = $user->getTasks();
+        
+        foreach($tasks as $task) {
+            // PROPRIETES DE CHAQUE TACHE
+            $dateButoir = $task->getDateButoir();
+            $importance = $task->getImportance();
+            $stats = $task->getStats();
+            $checked = $task->isChecked();
+            // CHANGE STAT SELON DATE ET CHECKED
+            if ($dateButoir < new DateTime() && $checked == true) {
+                foreach($stats as $stat) {
+                    $stat->setScore($stat->getScore() + $importance);
+                }
+            }
+            elseif ($dateButoir < new DateTime() && $checked == false) {
+                foreach($stats as $stat) {
+                    if($stat->getScore() >= $importance)
+                    $stat->setScore($stat->getScore() - $importance);
+                }
+            }
+        }
+    }
 
     #[Route('/', name: 'profile')]
         public function profile(User $user): Response
         {
             $tasks = $user->getTasks();
             $stats = $user->getStats();
+            
+            $this->statProgress($user);
 
-        return $this->render('registration/profile.html.twig', [
-            'user' => $user,
-            'tasks' => $tasks,
-            'stats' => $stats,
-    ]);
-    }
+            return $this->render('registration/profile.html.twig', [
+                'user' => $user,
+                'tasks' => $tasks,
+                'stats' => $stats,
+            ]);
+        }
 
     // AJOUT STAT USER
     #[Route('/add-stat', name: 'app_stat_add', methods: ['GET', 'POST'])]
@@ -76,7 +103,6 @@ class ProfileController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, User $user, StatRepository $statRepository): Response
     {
         if (!$user) {
-            // Si l'utilisateur n'est pas connecté
             return $this->redirectToRoute('app_login');
         }
 
@@ -105,4 +131,5 @@ class ProfileController extends AbstractController
         ]);
     }
 
+    
 }
