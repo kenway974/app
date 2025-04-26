@@ -41,6 +41,7 @@ final class StatController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $stat->setScore(0);
             $entityManager->persist($stat);
             $entityManager->flush();
 

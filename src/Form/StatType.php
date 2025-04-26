@@ -16,7 +16,6 @@ class StatType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('score')
             ->add('description')
             /*->add('User', EntityType::class, [
                 'class' => User::class,
