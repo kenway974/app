@@ -57,9 +57,20 @@ class Task
     #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'Task')]
     private Collection $stats;
 
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'tasks')]
+    private Collection $categories;
+
+    #[ORM\ManyToOne(inversedBy: 'task')]
+    private ?Goal $goal = null;
+
+
     public function __construct()
     {
         $this->stats = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
 
@@ -167,5 +178,40 @@ class Task
         return $this;
     }
 
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function getGoal(): ?Goal
+    {
+        return $this->goal;
+    }
+
+    public function setGoal(?Goal $goal): static
+    {
+        $this->goal = $goal;
+
+        return $this;
+    }
  
 }

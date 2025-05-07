@@ -16,6 +16,29 @@ class StatRepository extends ServiceEntityRepository
         parent::__construct($registry, Stat::class);
     }
 
+    public function findByUserId(int $userId): array
+    {
+        return $this->createQueryBuilder('s')
+            ->innerJoin('s.user', 'u') // Associe la table `stat_user` via `users`
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('s.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCategory(Category $category): array
+{
+    return $this->createQueryBuilder('s')
+        ->join('s.categories', 'c')
+        ->where('c = :category')
+        ->setParameter('category', $category)
+        ->getQuery()
+        ->getResult();
+}
+
+    
+    
     //    /**
     //     * @return Stat[] Returns an array of Stat objects
     //     */

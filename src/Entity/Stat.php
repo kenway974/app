@@ -25,7 +25,6 @@ class Stat
 
     //SCORE
     #[ORM\Column]
-    #[Assert\NotBlank]
     #[Assert\Range(min: 0, max: 100)]
     private ?int $score = null;
 
@@ -34,13 +33,6 @@ class Stat
     #[Assert\Length(min: 3, max: 255)]
     private ?string $description = null;
 
-    // USER ASSOCIE
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'stats')]
-    private Collection $User;
-
     // TACHES ASSOCIEES
     /**
      * @var Collection<int, Task>
@@ -48,15 +40,40 @@ class Stat
     #[ORM\ManyToMany(targetEntity: Task::class, inversedBy: 'stats')]
     private Collection $Task;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $category = null;
+
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'stats')]
+    private Collection $categories;
+
+    #[ORM\ManyToOne(inversedBy: 'stats')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
-        $this->User = new ArrayCollection();
         $this->Task = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function getTitle(): ?string
@@ -95,29 +112,6 @@ class Stat
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUser(): Collection
-    {
-        return $this->User;
-    }
-
-    public function addUser(User $user): static
-    {
-        if (!$this->User->contains($user)) {
-            $this->User->add($user);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        $this->User->removeElement($user);
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Task>
@@ -142,4 +136,42 @@ class Stat
 
         return $this;
     }
+
+    public function getCategory(): ?array
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?array $category): static
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    
 }

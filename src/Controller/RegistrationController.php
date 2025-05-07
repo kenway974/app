@@ -34,40 +34,44 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager)
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
         $connectedUser = $security->getUser();
-        if (!$connectedUser) {
-            $user = new User();
-            $form = $this->createForm(RegistrationFormType::class, $user);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                /** @var string $plainPassword */
-                $plainPassword = $form->get('plainPassword')->getData();
-
-                // encode the plain password
-                $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-                // set role user
-                $user->setRoles(['ROLE_USER']);
-                $entityManager->persist($user);
-                $entityManager->flush();
-
-                $userRegistrationEvent = new UserRegistrationEvent($user);
-                $this->dispatcher->dispatch($userRegistrationEvent, UserRegistrationEvent::USER_REGISTRATION_EVENT);
-            
-                // login
-                $security->login($user, 'form_login', 'main');
-
-                return $this->redirectToRoute('profile', [
-                    'id' => $user->getId()]);
-
-            }
         
-            return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
-            ]);
+        if ($connectedUser) {
+            return $this->redirectToRoute('app_login', []);
+            }
+
+        $user = new User();
+        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var string $plainPassword */
+            $plainPassword = $form->get('plainPassword')->getData();
+
+            // encode the plain password
+            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            // set role user
+            $user->setRoles(['ROLE_USER']);
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $userRegistrationEvent = new UserRegistrationEvent($user);
+            $this->dispatcher->dispatch($userRegistrationEvent, UserRegistrationEvent::USER_REGISTRATION_EVENT);
+            
+            // login
+            $security->login($user, 'form_login', 'main');
+
+            return $this->redirectToRoute('profile', [
+                'id' => $user->getId()]);
+
         }
+        
+            
+
+        return $this->render('registration/register.html.twig', [
+            'registrationForm' => $form,]);
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]

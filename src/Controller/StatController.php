@@ -7,6 +7,7 @@ use App\Entity\Stat;
 use App\Form\StatType;
 use App\Form\UserStatType;
 use App\Repository\StatRepository;
+use App\Repository\CategoryRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Event\UserRegistrationEvent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,21 +32,28 @@ final class StatController extends AbstractController
 
     
 
-    // NEW STAT ADMIN
-    #[IsGranted('ROLE_ADMIN')]
+    // NEW STAT USER
+    #[IsGranted('ROLE_USER')]
     #[Route('/new', name: 'app_stat_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, Security $security, EntityManagerInterface $entityManager, CategoryRepository $categoryRepository): Response
     {
+        $user = $security->getUser();
+
+        $categories = $categoryRepository->findAll();
+
         $stat = new Stat();
-        $form = $this->createForm(StatType::class, $stat);
+        $stat->setUser($user);
+        $form = $this->createForm(StatType::class, $stat, ['categories'=>$categories]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
+            
             $stat->setScore(0);
             $entityManager->persist($stat);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_stats_admin', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('stat/new.html.twig', [
@@ -54,8 +62,8 @@ final class StatController extends AbstractController
         ]);
     }
     
-    // STAT ADMIN
-    #[IsGranted('ROLE_ADMIN')]
+    // STAT USER
+    #[IsGranted('ROLE_USER')]
     #[Route('/{id}', name: 'app_stat_show', methods: ['GET'])]
     public function show(Stat $stat): Response
     {
@@ -64,7 +72,7 @@ final class StatController extends AbstractController
         ]);
     }
 
-    // EDIT STAT ADMIN
+    // EDIT STAT USER
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/{id}/edit', name: 'app_stat_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Stat $stat, EntityManagerInterface $entityManager): Response

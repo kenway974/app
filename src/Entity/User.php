@@ -45,18 +45,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 25)]
     private ?string $username = null;
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
+    /**
+     * @var Collection<int, Goal>
+     */
+    #[ORM\OneToMany(targetEntity: Goal::class, mappedBy: 'user')]
+    private Collection $goals;
+
     /**
      * @var Collection<int, Stat>
      */
-    #[ORM\ManyToMany(targetEntity: Stat::class, mappedBy: 'User')]
+    #[ORM\OneToMany(targetEntity: Stat::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $stats;
-
-    #[ORM\Column]
-    private bool $isVerified = false;
 
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+        $this->goals = new ArrayCollection();
         $this->stats = new ArrayCollection();
     }
 
@@ -178,6 +185,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Goal>
+     */
+    public function getGoals(): Collection
+    {
+        return $this->goals;
+    }
+
+    public function addGoal(Goal $goal): static
+    {
+        if (!$this->goals->contains($goal)) {
+            $this->goals->add($goal);
+            $goal->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGoal(Goal $goal): static
+    {
+        if ($this->goals->removeElement($goal)) {
+            // set the owning side to null (unless already changed)
+            if ($goal->getUser() === $this) {
+                $goal->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, Stat>
      */
@@ -190,7 +239,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->stats->contains($stat)) {
             $this->stats->add($stat);
-            $stat->addUser($this);
+            $stat->setUser($this);
         }
 
         return $this;
@@ -199,20 +248,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeStat(Stat $stat): static
     {
         if ($this->stats->removeElement($stat)) {
-            $stat->removeUser($this);
+            // set the owning side to null (unless already changed)
+            if ($stat->getUser() === $this) {
+                $stat->setUser(null);
+            }
         }
-
-        return $this;
-    }
-
-    public function isVerified(): bool
-    {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
 
         return $this;
     }
