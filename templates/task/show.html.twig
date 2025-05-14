@@ -28,6 +28,24 @@
                 <td>{{ task.importance }}</td>
             </tr>
             <tr>
+                <th>Statistiques liées</th>
+                <td colspan="2">
+                    {% if task.stats is not empty %}
+                        <ul>
+                            {% for stat in task.stats %}
+                                <li>
+                                    <a href="{{ path('app_stat_show', {'id': stat.id}) }}">
+                                        {{ stat.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        Aucune statistique liée.
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
                 <th>Checked</th>
                 <td>{{ task.checked ? 'Yes' : 'No' }}</td>
             </tr>

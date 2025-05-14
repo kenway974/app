@@ -1,4 +1,6 @@
 import './bootstrap.js';
+import './navbar.js';
+import './profile.js';
 /*
  * Welcome to your app's main JavaScript file!
  *

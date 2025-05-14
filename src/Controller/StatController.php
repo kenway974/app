@@ -21,8 +21,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class StatController extends AbstractController
 {
    // LISTE STAT ADMIN
-    #[IsGranted('ROLE_ADMIN')]
-    #[Route('\stats-admin', name: 'app_stats_admin', methods: ['GET'])]
+    #[Route('\stats-index', name: 'app_stat_index', methods: ['GET'])]
     public function statsAdmin(StatRepository $statRepository): Response
     {
         return $this->render('stat/stats_admin.html.twig', [

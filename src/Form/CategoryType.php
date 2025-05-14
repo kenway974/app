@@ -14,7 +14,6 @@ class CategoryType extends AbstractType
     {
         $builder
             ->add('title')
-            ->add('stats')
             ->add('description', TextType::class, [
                 'required' => false, 
             ])
@@ -25,7 +24,6 @@ class CategoryType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Category::class,
-            'stats',
             'csrf_protection' => true,
             'csrf_field_name' => '_csrf_token',
             'csrf_token_id' => 'category',

@@ -25,6 +25,17 @@ class GoalRepository extends ServiceEntityRepository
         ->getResult();
 }
 
+public function findByUserId(int $userId): array
+    {
+        return $this->createQueryBuilder('g')
+            ->innerJoin('g.user', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->orderBy('g.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 
 //    /**
 //     * @return Goal[] Returns an array of Goal objects

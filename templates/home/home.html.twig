@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard de {{ app.user.username }}{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+
+<div class="dashboard-container">
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="level-info">
+            <div><strong>Niveau :</strong> {{ app.user.level }}</div>
+            <div class="progress-bar">
+                <div class="progress" style="width: {{ app.user.xp }}%"></div>
+            </div>
+            <div><strong>XP :</strong> {{ app.user.xp }}</div>
+        </div>
+        <div class="profile">
+            <img src="{{ asset('uploads/images/profile/' ~ app.user.profilePic) }}" alt="avatar" class="avatar">
+            <div><strong>{{ app.user.username }}</strong></div>
+            <div><strong>Trophées :</strong> {{ app.user.trophies|length }}</div>
+        </div>
+        <div class="social">
+            <a href="#"><img src="/icons/friends.svg" alt="social"></a>
+            <a href="#"><img src="/icons/settings.svg" alt="settings"></a>
+        </div>
+    </div>
+
+    <!-- Categories Carousel -->
+    <div class="categories-carousel">
+        <h3>Catégories</h3>
+        <div class="carousel">
+            {% for category in categories %}
+                <a href="{{ path('app_category_show', {'id': category.id}) }}" class="carousel-item">
+                    <strong>{{ category.title }}</strong>
+                    <p>{{ category.description }}</p>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Goals Carousel -->
+    <div class="goal-carousel">
+        <h3>Objectifs</h3>
+        <div class="carousel">
+            {% for goal in goals %}
+                <div class="carousel-item">
+                    <a href="{{ path('app_goal_show', {'id': goal.id}) }}">
+                        <strong>{{ goal.title }}</strong>
+                        <p>{{ goal.description }}</p>
+                        <small>{{ goal.dateButoir|date('Y-m-d') }}</small>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Task Slot -->
+    <div class="task-slot">
+        <h3>Votre tâche en cours</h3>
+        {% for task in tasks %}
+            <div class="task-item">
+                <strong>{{ task.title }}</strong>
+                <p>{{ task.soustaches|length > 50 ? task.soustaches|slice(0, 50) ~ '...' : task.soustaches }}</p>
+                <a href="{{ path('app_task_show', {'id': task.id}) }}" class="task-link">Détails</a>
+            </div>
+        {% else %}
+            <p>Aucune tâche en cours.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Create Task Button -->
+    <div class="central-button">
+        <a href="{{ path('app_task_new', { id: app.user.id }) }}" class="create-task-btn">Créer une tâche</a>
+    </div>
+</div>
+{% endblock %}

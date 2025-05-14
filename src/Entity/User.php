@@ -60,11 +60,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Stat::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $stats;
 
+    /**
+     * @var Collection<int, Trophy>
+     */
+    #[ORM\ManyToMany(targetEntity: Trophy::class, mappedBy: 'user')]
+    private Collection $trophies;
+
+    #[ORM\Column]
+    private ?int $level = null;
+
+    #[ORM\Column]
+    private ?int $xp = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilePic = null;
+
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
         $this->goals = new ArrayCollection();
         $this->stats = new ArrayCollection();
+        $this->trophies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -253,6 +269,69 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $stat->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Trophy>
+     */
+    public function getTrophies(): Collection
+    {
+        return $this->trophies;
+    }
+
+    public function addTrophy(Trophy $trophy): static
+    {
+        if (!$this->trophies->contains($trophy)) {
+            $this->trophies->add($trophy);
+            $trophy->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrophy(Trophy $trophy): static
+    {
+        if ($this->trophies->removeElement($trophy)) {
+            $trophy->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getLevel(): ?int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(int $level): static
+    {
+        $this->level = $level;
+
+        return $this;
+    }
+
+    public function getXp(): ?int
+    {
+        return $this->xp;
+    }
+
+    public function setXp(int $xp): static
+    {
+        $this->xp = $xp;
+
+        return $this;
+    }
+
+    public function getProfilePic(): ?string
+    {
+        return $this->profilePic;
+    }
+
+    public function setProfilePic(?string $profilePic): static
+    {
+        $this->profilePic = $profilePic;
 
         return $this;
     }

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Trophy{% endblock %}
+
+{% block body %}
+    <h1>Edit Trophy</h1>
+
+    {{ include('trophy/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_trophy_index') }}">back to list</a>
+
+    {{ include('trophy/_delete_form.html.twig') }}
+{% endblock %}

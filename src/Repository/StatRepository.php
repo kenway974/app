@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Stat;
+use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,7 +20,7 @@ class StatRepository extends ServiceEntityRepository
     public function findByUserId(int $userId): array
     {
         return $this->createQueryBuilder('s')
-            ->innerJoin('s.user', 'u') // Associe la table `stat_user` via `users`
+            ->innerJoin('s.user', 'u')
             ->where('u.id = :userId')
             ->setParameter('userId', $userId)
             ->orderBy('s.id', 'ASC')

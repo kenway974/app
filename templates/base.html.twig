@@ -3,8 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        
         {% block stylesheets %}
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
         {% endblock %}
 
         {% block javascripts %}
@@ -12,6 +15,41 @@
         {% endblock %}
     </head>
     <body>
+
+    <nav id="customNavbar" class="custom-navbar">
+  <div class="nav-buttons">
+    <a class="nav-btn" href="{{ path('app_goal_index') }}">
+      <img src="{{ asset('images/navbar/goal.webp') }}" alt="Goals">
+      <span>Goals</span>
+    </a>
+    <a class="nav-btn" href="{{ path('app_task_index') }}">
+      <img src="{{ asset('images/navbar/task.jpg') }}" alt="Tasks">
+      <span>Tasks</span>
+    </a>
+    <a class="nav-btn" href="{{ path('profile', {'id': app.user.id}) }}">
+      <img src="{{ asset('images/navbar/profile.jpg') }}" alt="Profile">
+      <span>Profile</span>
+    </a>
+    <a class="nav-btn" href="{{ path('app_category_index') }}">
+      <img src="{{ asset('images/navbar/category.webp') }}" alt="Categories">
+      <span>Categories</span>
+    </a>
+    <a class="nav-btn" href="{{ path('app_stat_index') }}">
+      <img src="{{ asset('images/navbar/stat.jpg') }}" alt="Stats">
+      <span>Stats</span>
+    </a>
+  </div>
+</nav>
+
+
+
+
         {% block body %}{% endblock %}
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+        <script src="{{ asset('js/navbar.js') }}"></script>
+
+
     </body>
 </html>

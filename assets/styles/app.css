@@ -1,3 +1,212 @@
-body {
-    background-color: skyblue;
+ /* NAVBAR DE BASE */
+.custom-navbar {
+    width: 100%;
+    z-index: 1000;
+    background: #fff;
+    transition: top 0.4s ease;
+    position: fixed;
+  }
+  
+  .nav-buttons {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    position: relative;
+  }
+  
+  .nav-btn {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    color: #000;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    height: 70px;
+  }
+  
+  .nav-btn img {
+    width: 60%;
+    height: 60%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .nav-btn span {
+    font-size: 0.7rem;
+    margin-top: 3px;
+  }
+  
+  /* GROSSISSEMENT DES BOUTONS EN DEPASSANT LA NAVBAR */
+  @media (orientation: landscape) {
+    .custom-navbar {
+      top: 0;
+      bottom: auto;
+      border-bottom: 1px solid #ddd;
+    }
+  
+    .nav-btn:hover img {
+      transform: scale(1.4) translateY(20%);
+    }
+  
+    body {
+      padding-top: 90px;
+    }
+  }
+  
+  @media (orientation: portrait) {
+    .custom-navbar {
+      bottom: 0;
+      top: auto;
+      border-top: 1px solid #ddd;
+    }
+  
+    .nav-btn:hover img {
+      transform: scale(1.4) translateY(-20%);
+    }
+  
+    body {
+      padding-bottom: 90px;
+    }
+  }
+
+
+  /* home.css */
+
+/* Container principal */
+.dashboard-container {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
 }
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.topbar .level-info {
+  font-size: 14px;
+}
+
+.topbar .profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.profile {
+  text-align: center;
+}
+
+/* Carrousel des catégories */
+.categories-carousel, .goal-carousel {
+  display: flex;
+  overflow-x: auto;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.carousel-item {
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  width: 200px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-item a {
+  text-decoration: none;
+  color: #333;
+}
+
+.carousel-item:hover {
+  transform: scale(1.05);
+}
+
+/* Slot des tâches */
+.task-slot {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+/* Bouton central pour créer une tâche */
+.central-button {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.central-button a {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.central-button a:hover {
+  background-color: #0056b3;
+}
+
+/* Responsivité */
+@media (max-width: 768px) {
+  /* Sur petit écran, on empile les éléments de la topbar */
+  .topbar {
+      flex-direction: column;
+      text-align: center;
+  }
+
+  /* Carrousel devient en colonne */
+  .categories-carousel, .goal-carousel {
+      flex-direction: column;
+  }
+
+  /* Chaque élément du carrousel prend la largeur entière */
+  .carousel-item {
+      width: 100%;
+      margin-bottom: 10px;
+  }
+
+  /* Tâches prennent plus de place sur mobile */
+  .task-slot {
+      margin-top: 15px;
+  }
+
+  /* Central button ajuste son padding */
+  .central-button a {
+      padding: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Réduire encore la taille du texte et les espaces sur très petits écrans */
+  .topbar .level-info {
+      font-size: 12px;
+  }
+
+  .task-slot {
+      padding: 10px;
+  }
+
+  .carousel-item {
+      padding: 8px;
+  }
+}
+
+

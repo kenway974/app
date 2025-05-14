@@ -1,152 +1,65 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Profil utilisateur{% endblock %}
+{% block title %}Profil de {{ app.user.username }}{% endblock %}
 
 {% block body %}
-    <h1>Bienvenue sur votre profil</h1>
+<link rel="stylesheet" href="{{ asset('styles/profile_basic.css') }}">
 
-    {% if app.user %}
-        <p>Nom d'utilisateur : {{ app.user.username }}</p>
-        <p>Email : {{ app.user.email }}</p>
+<div class="container">
+    <h1>Profil de {{ app.user.username }}</h1>
 
-{#LISTE DES CATEGORIES#}
-    <h2>Liste des catégories</h2>
+    <div class="profile-section">
+        <img class="profile-picture" src="{{ asset('uploads/images/profile/' ~ app.user.profilePic) }}" alt="Photo de profil">
+        <p><strong>Nom d'utilisateur :</strong> {{ app.user.username }}</p>
+        <p><strong>Niveau :</strong> {{ app.user.level }}</p>
+        <p><strong>XP :</strong> {{ app.user.xp }}</p>
+        <div class="progress-bar">
+            <div class="progress" style="width: {{ app.user.xp }}%"></div>
+        </div>
+        <p><a href="{{ path('app_profile_edit', { id: app.user.id }) }}">✏️ Modifier le profil</a></p>
+    </div>
 
-{% for category in categories %}
-        <table class="table-categories">
-        <tbody>
-            <tr>
-                <th>Title</th>
-                <td>{{ category.title }}</td>
-            </tr>
-            </table>
-        </tbody>
-        <a href="{{ path('app_category_show', {'id': category.id}) }}">show</a>
-        {% endfor %}
-{#LISTE DES OBJECTIFS#}
-    <h2>Liste des objectifs</h2>
+    <hr>
 
-    <table class="table-gaols">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>DateButoir</th>
-                <th>Pourquoi</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for goal in goals %}
-            <tr>
-                <td>{{ goal.title }}</td>
-                <td>{{ goal.category ? goal.category.title : 'Non définie' }}</td>
-                <td>{{ goal.description }}</td>
-                <td>{{ goal.dateButoir ? goal.dateButoir|date('Y-m-d') : '' }}</td>
-                <td>{{ goal.pourquoi }}</td>
-                <td>
-                    <a href="{{ path('app_goal_show', {'id': goal.id}) }}">show</a>
-                    <a href="{{ path('app_goal_edit', {'id': goal.id}) }}">edit</a>
-                </td>
-            </tr>
+    <h2>Tâches : {{ app.user.tasks|length }}</h2>
+    <h2>Objectifs : {{ app.user.goals|length }}</h2>
+    <ul>
+        {% for goal in app.user.goals %}
+            <li>
+                <a href="{{ path('app_goal_show', {id: goal.id}) }}">{{ goal.title }}</a>
+                - {{ goal.description }}
+                (Échéance : {{ goal.dateButoir|date('d/m/Y') }})
+            </li>
         {% else %}
-            <tr>
-                <td colspan="7">Aucun objectif pour l'instant</td>
-            </tr>
+            <li>Aucun objectif défini.</li>
         {% endfor %}
-        </tbody>
-    </table>
+    </ul>
 
-    <a href="{{ path('app_goal_new', { id: app.user.id }) }}">Ajouter un objectif</a>    
+    <hr>
 
-
-{#LISTE DES TACHES#}
-        <h2>Liste des tâches :</h2>
-        <ul>
-    {% for task in tasks %}
-        <table class="table-task">
-        <tbody>
-            <tr>
-                <th>Title</th>
-                <td>{{ task.title }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ task.soustaches }}</td>
-            </tr>
-            <tr>
-                <th>Date Butoir</th>
-                <td>{{ task.datebutoir|date('Y-m-d') }}</td>
-            </tr>
-            <tr>
-                <th>Catégories</th>
-                <td>
-                    {% for category in task.categories %}
-                        <tr>
-                            <td>{{ category.title }}</td>
-                            <td>{{ category.description }}</td>
-                        </tr>
-                    {% else %}
-                        <tr><td colspan="2">Aucune catégorie associée.</td></tr>
-                    {% endfor %}
-                </td>
-            </tr>
-            <tr>
-            <th>Stat</th>
-            <td>    
-                {% for stat in task.stats %}
-            <tr>
-                <td>{{ stat.title }}</td>
-                <td>{{ stat.score }}</td> {# Remplace 'name' par l'attribut correct de ton entité Stat #}
-            </tr>
+    <h2>Statistiques</h2>
+    <ul>
+        {% for stat in app.user.stats %}
+            <li>
+                <a href="{{ path('app_stat_show', {id: stat.id}) }}">{{ stat.title }}</a> : {{ stat.score }}
+            </li>
+        {% else %}
+            <li>Aucune statistique disponible.</li>
         {% endfor %}
-        </td>
-            </tr>
-                    </br>
-        </tbody>
-        </table>
-        <a href="{{ path('app_task_show', {'id': task.id}) }}">show</a>
-    {% else %}
-        <h4>Aucune tâche pour l'instant.</h4>
-    {% endfor %}
-        </ul>
-        <a href="{{ path('app_task_new', { id: app.user.id }) }}">Créer une tâche</a>
+    </ul>
 
-    </br>
+    <hr>
 
-{#LISTE DES STATS#}
-        <h2>Liste des stats :</h2>
-        <ul>
-    {% for stat in stats %}
-        <table class="table-stat">
-        <tbody>
-            <tr>
-                <th>Title</th>
-                <td>{{ stat.title }}</td>
-            </tr>
-            <tr>
-                <th>Score</th>
-                <td>{{ stat.score }}</td>
-            </tr>
-            </br>
-        </tbody>
-        </table>
-    {% else %}
-        <h4>Aucune stat pour l'instant.</h4>
-    {% endfor %}
-        </ul>
-        <a href="{{ path('app_stat_add', { id: app.user.id }) }}">Ajouter une stat</a>
-        <a href="{{ path('app_stat_new', { id: app.user.id }) }}">Créer une stat</a>
-
-    </br>
-    </br>
-    
-    <a href="{{ path('app_category_index', { id: app.user.id }) }}">Créer catégorie</a>
-    
-
-    {% else %}
-        <p>Utilisateur non connecté.</p>
-    {% endif %}
-
-    <a href="{{ path('app_logout') }}">Déconnexion</a>
+    <h2>Trophées ({{ app.user.trophies|length }})</h2>
+    <ul>
+        {% for trophy in app.user.trophies %}
+            <li>
+                <img src="{{ asset('images/trophies/' ~ trophy.image) }}" alt="{{ trophy.title }}" style="width: 30px; height: 30px;">
+                <strong>{{ trophy.title }}</strong> : {{ trophy.description }}
+            </li>
+        {% else %}
+            <li>Aucun trophée débloqué.</li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

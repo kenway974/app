@@ -39,11 +39,18 @@ class Category
     #[ORM\OneToMany(targetEntity: Goal::class, mappedBy: 'category')]
     private Collection $goals;
 
+    /**
+     * @var Collection<int, Trophy>
+     */
+    #[ORM\OneToMany(targetEntity: Trophy::class, mappedBy: 'category')]
+    private Collection $trophies;
+
     public function __construct()
     {
         $this->stats = new ArrayCollection();
         $this->tasks = new ArrayCollection();
         $this->goals = new ArrayCollection();
+        $this->trophies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -149,6 +156,36 @@ class Category
     public function removeGoal(Goal $goal): static
     {
         $this->goals->removeElement($goal);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Trophy>
+     */
+    public function getTrophies(): Collection
+    {
+        return $this->trophies;
+    }
+
+    public function addTrophy(Trophy $trophy): static
+    {
+        if (!$this->trophies->contains($trophy)) {
+            $this->trophies->add($trophy);
+            $trophy->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrophy(Trophy $trophy): static
+    {
+        if ($this->trophies->removeElement($trophy)) {
+            // set the owning side to null (unless already changed)
+            if ($trophy->getCategory() === $this) {
+                $trophy->setCategory(null);
+            }
+        }
 
         return $this;
     }

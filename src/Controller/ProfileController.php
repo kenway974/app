@@ -14,6 +14,7 @@ use App\Repository\CategoryRepository;
 use App\Form\GoalType;
 use App\Form\TaskType;
 use App\Form\UserStatType;
+use App\Form\UserEditType;
 use App\Repository\TaskRepository;
 use App\Security\EmailVerifier;
 use DateTime;
@@ -24,6 +25,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -62,33 +66,17 @@ class ProfileController extends AbstractController
 
         // PAGE ADMIN
     #[Route('/admin', name: 'admin')]
-        public function admin(User $user, StatRepository $statRepository, CategoryRepository $categoryRepository): Response
-        {
-            $stats = $statRepository->findAll();
-            $categories = $categoryRepository->findAll();
-            
-            $this->statProgress($user);
-
-            return $this->render('profile/admin.html.twig', [
-                'user' => $user,
-                'stats' => $stats,
-                'categories' => $categories,
-            ]);
-        }
-
-        // AFFICHAGE DU PROFIL + STATPROGRESS
-    #[Route('/', name: 'profile')]
-        public function profile(User $user, GoalRepository $goalRepository, CategoryRepository $categoryRepository): Response
+        public function admin(User $user, StatRepository $statRepository, CategoryRepository $categoryRepository, GoalRepository $goalRepository): Response
         {
             $tasks = $user->getTasks();
-            $stats = $user->getStats();
+            $stats = $statRepository->findAll();
             $goals = $goalRepository->findbyCategory();
             $categories = $categoryRepository->findAll();
            
 
             $this->statProgress($user);
 
-            return $this->render('profile/profile.html.twig', [
+            return $this->render('profile/admin.html.twig', [
                 'user' => $user,
                 'tasks' => $tasks,
                 'stats' => $stats,
@@ -97,7 +85,64 @@ class ProfileController extends AbstractController
             ]);
         }
 
-            // CREATION GOAL
+
+        // AFFICHAGE DU PROFIL
+    #[Route('/', name: 'profile')]
+        public function profile(User $user, GoalRepository $goalRepository, StatRepository $statRepository, CategoryRepository $categoryRepository): Response
+        {
+            if (!$user) {
+                return $this->redirectToRoute('app_login');
+            }
+    
+            $goals = $goalRepository->findBy(['user' => $user]);
+            $stats = $statRepository->findBy(['user' => $user]);
+            
+    
+            return $this->render('profile/profile.html.twig', [
+                'goals' => $goals,
+                'stats' => $stats,
+            ]);
+        }
+
+        // EDIT PROFILE
+    #[Route('/edit', name: 'app_profile_edit')]
+    public function edit(User $user, Request $request, EntityManagerInterface $em, SluggerInterface $slugger
+): Response
+    {
+        $form = $this->createForm(UserEditType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('profilePic')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('profile_pictures_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors du téléchargement de l\'image.');
+                }
+
+                $user->setProfilePic($newFilename);
+            }
+
+            $em->flush();
+
+            $this->addFlash('success', 'Profil mis à jour avec succès !');
+            return $this->redirectToRoute('profile');
+        }
+
+        return $this->render('profile/profile_edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+        // CREATION GOAL
     #[Route('/new-goal', name: 'app_goal_new', methods: ['GET', 'POST'])]
         public function newGoal(User $user,Request $request, EntityManagerInterface $entityManager, CategoryRepository $categoryRepository): Response
         {
@@ -111,7 +156,7 @@ class ProfileController extends AbstractController
             $goal->setUser($user);
 
         
-            $form = $this->createForm(GoalType::class, $goal, ['categories'=>$categories]);
+            $form = $this->createForm(GoalType::class, $goal, ['categories' => $categories]);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -133,7 +178,7 @@ class ProfileController extends AbstractController
         }
 
         
-            // AJOUT STAT USER
+        // AJOUT STAT USER
     #[Route('/add-stat', name: 'app_stat_add', methods: ['GET', 'POST'])]
     public function addStatUser(Request $request, StatRepository $statRepository, EntityManagerInterface $entityManager, User $user): Response
     {   
